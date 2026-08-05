@@ -28,16 +28,23 @@ app = FastAPI(
 )
 
 # These mounts mirror Vercel's public asset URLs during local development.
-app.mount(
-    "/css",
-    StaticFiles(directory=str(PUBLIC_DIRECTORY / "css")),
-    name="css",
-)
-app.mount(
-    "/js",
-    StaticFiles(directory=str(PUBLIC_DIRECTORY / "js")),
-    name="js",
-)
+CSS_DIRECTORY = PUBLIC_DIRECTORY / "css"
+JS_DIRECTORY = PUBLIC_DIRECTORY / "js"
+
+# Uvicorn needs these mounts locally. Vercel serves public/ through its CDN.
+if CSS_DIRECTORY.is_dir():
+    app.mount(
+        "/css",
+        StaticFiles(directory=str(CSS_DIRECTORY)),
+        name="css",
+    )
+
+if JS_DIRECTORY.is_dir():
+    app.mount(
+        "/js",
+        StaticFiles(directory=str(JS_DIRECTORY)),
+        name="js",
+    )
 
 app.include_router(pages_router)
 
