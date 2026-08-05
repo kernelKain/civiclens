@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="placeholder-card empty-state">
+            <span class="empty-state-icon" aria-hidden="true">
+                <i class="bi bi-bookmark"></i>
+            </span>
+            <h1>{{ heading }}</h1>
+            <p>{{ description }}</p>
+            <a
+                class="civic-secondary-button mt-3"
+                href="{{ request.url_for('explore') }}"
+            >
+                Explore CivicLens
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

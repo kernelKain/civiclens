@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1 class="page-heading">{{ heading }}</h1>
+        <p class="page-description">{{ description }}</p>
+
+        <ol class="step-list mt-4">
+            <li class="step-item">
+                <span class="step-number">1</span>
+                <div>
+                    <strong>Add a photograph</strong>
+                    <p class="mb-0 text-secondary">
+                        Image upload will be added in a later milestone.
+                    </p>
+                </div>
+            </li>
+            <li class="step-item">
+                <span class="step-number">2</span>
+                <div>
+                    <strong>Confirm the approximate location</strong>
+                    <p class="mb-0 text-secondary">
+                        Important actions will not require map interaction.
+                    </p>
+                </div>
+            </li>
+            <li class="step-item">
+                <span class="step-number">3</span>
+                <div>
+                    <strong>Review and submit</strong>
+                    <p class="mb-0 text-secondary">
+                        Residents will approve AI suggestions and duplicate matches.
+                    </p>
+                </div>
+            </li>
+        </ol>
+    </div>
+</section>
+{% endblock %}

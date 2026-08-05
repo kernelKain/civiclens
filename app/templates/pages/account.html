@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="placeholder-card empty-state">
+            <span class="empty-state-icon" aria-hidden="true">
+                <i class="bi bi-person"></i>
+            </span>
+            <h1>{{ heading }}</h1>
+            <p>{{ description }}</p>
+            <span class="text-secondary">
+                Authentication is intentionally outside this foundation milestone.
+            </span>
+        </div>
+    </div>
+</section>
+{% endblock %}

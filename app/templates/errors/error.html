@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="error-page">
+    <div class="container">
+        <div class="error-content mx-auto">
+            <span class="error-code">{{ status_code }}</span>
+            <h1 class="error-title">{{ heading }}</h1>
+            <p class="error-description">{{ description }}</p>
+
+            <a
+                class="civic-primary-button mt-3"
+                href="{{ request.url_for('explore') }}"
+            >
+                Return to Explore
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

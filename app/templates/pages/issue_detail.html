@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <span class="issue-status-badge mb-3">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            Demonstration only
+        </span>
+
+        <h1 class="page-heading">{{ heading }}</h1>
+        <p class="page-description">{{ description }}</p>
+
+        <div class="content-card mt-4">
+            <h2 class="content-card-title">Issue reference</h2>
+            <p><code>{{ issue_id }}</code></p>
+
+            <h2 class="content-card-title mt-4">Evidence timeline</h2>
+            <ul class="evidence-timeline">
+                <li class="evidence-timeline-item">
+                    No evidence has been stored for this demonstration page.
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

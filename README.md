@@ -51,3 +51,14 @@ The current pages are placeholders and do not yet implement CivicLens product fu
 - Git
 - A PowerShell terminal
 - A Vercel account for deployment
+
+## Local setup
+
+```powershell
+git clone https://github.com/kernelKain/civiclens.git
+cd civiclens
+py -3.14 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+Copy-Item .env.example .env
+uvicorn app.main:app --reload
