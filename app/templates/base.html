@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+    <meta
+        name="description"
+        content="CivicLens helps residents discover and contribute evidence to shared civic issues."
+    >
+
+    <title>
+        {% if page_title %}
+            {{ page_title }} | {{ settings.app_name }}
+        {% else %}
+            {{ settings.app_name }}
+        {% endif %}
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+        integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk"
+        crossorigin="anonymous"
+    >
+
+    <link href="/css/app.css" rel="stylesheet">
+</head>
+
+<body class="d-flex min-vh-100 flex-column">
+    <a class="skip-link" href="#main-content">
+        Skip to main content
+    </a>
+
+    <div
+        id="network-status"
+        class="network-status alert alert-warning rounded-0 text-center"
+        role="status"
+        hidden
+    >
+        <i class="bi bi-wifi-off me-2" aria-hidden="true"></i>
+        You appear to be offline. Some CivicLens features may be unavailable.
+    </div>
+
+    <header class="site-header">
+        <nav
+            class="desktop-navigation d-none d-md-flex"
+            aria-label="Primary navigation"
+        >
+            <div
+                class="container d-flex align-items-center justify-content-between"
+            >
+                <a
+                    class="civic-brand"
+                    href="{{ request.url_for('explore') }}"
+                    aria-label="CivicLens home"
+                >
+                    <span class="civic-brand-mark" aria-hidden="true">
+                        <i class="bi bi-bullseye"></i>
+                    </span>
+
+                    <span>{{ settings.app_name }}</span>
+                </a>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a
+                        class="desktop-nav-link{% if active_nav == 'explore' %} active{% endif %}"
+                        href="{{ request.url_for('explore') }}"
+                        {% if active_nav == "explore" %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        Explore
+                    </a>
+
+                    <a
+                        class="desktop-nav-link{% if active_nav == 'following' %} active{% endif %}"
+                        href="{{ request.url_for('following') }}"
+                        {% if active_nav == "following" %}
+                            aria-current="page"
+                        {% endif %}
+                    >
+                        Following
+                    </a>
+
+                    <a
+                        class="desktop-nav-link{% if active_nav == 'account' %} active{% endif %}"
+                        
