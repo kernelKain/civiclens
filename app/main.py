@@ -8,7 +8,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.auth.cookies import prevent_auth_caching
+from app.auth.csrf import CSRFCookieMiddleware
 from app.config import get_settings
+from app.routes.auth import router as auth_router
 from app.routes.pages import router as pages_router
 from app.templating import (
     PROJECT_ROOT,
@@ -21,17 +24,19 @@ logger = logging.getLogger("civiclens")
 settings = get_settings()
 
 PUBLIC_DIRECTORY = PROJECT_ROOT / "public"
+CSS_DIRECTORY = PUBLIC_DIRECTORY / "css"
+JS_DIRECTORY = PUBLIC_DIRECTORY / "js"
 
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
 )
 
-# These mounts mirror Vercel's public asset URLs during local development.
-CSS_DIRECTORY = PUBLIC_DIRECTORY / "css"
-JS_DIRECTORY = PUBLIC_DIRECTORY / "js"
+# Assign a CSRF token to HTML requests and manage the secure CSRF cookie.
+app.add_middleware(CSRFCookieMiddleware)
 
-# Uvicorn needs these mounts locally. Vercel serves public/ through its CDN.
+# These mounts mirror Vercel's public asset URLs during local development.
+# Vercel serves public/ through its CDN in production.
 if CSS_DIRECTORY.is_dir():
     app.mount(
         "/css",
@@ -46,6 +51,9 @@ if JS_DIRECTORY.is_dir():
         name="js",
     )
 
+# Authentication routes are registered before general page routes. This
+# prevents a broad page route from accidentally matching an auth URL.
+app.include_router(auth_router)
 app.include_router(pages_router)
 
 
@@ -65,9 +73,17 @@ async def handle_http_exception(
     request: Request,
     exception: StarletteHTTPException,
 ) -> HTMLResponse:
-    """Render safe HTML responses for HTTP errors."""
+    """Render safe HTML responses for expected HTTP errors."""
 
     error_details: dict[int, tuple[str, str]] = {
+        401: (
+            "Sign in required",
+            "You must sign in before accessing this page.",
+        ),
+        403: (
+            "Request rejected",
+            "This form could not be verified. Refresh the page and try again.",
+        ),
         404: (
             "Page not found",
             "The page you requested does not exist or may have moved.",
@@ -75,6 +91,10 @@ async def handle_http_exception(
         405: (
             "Action not allowed",
             "This page does not support that type of request.",
+        ),
+        429: (
+            "Too many attempts",
+            "Please wait before trying again.",
         ),
     }
 
@@ -95,12 +115,17 @@ async def handle_http_exception(
         description=description,
     )
 
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="errors/error.html",
         context=context,
         status_code=exception.status_code,
     )
+
+    if request.url.path.startswith("/auth/"):
+        prevent_auth_caching(response)
+
+    return response
 
 
 @app.exception_handler(Exception)
@@ -114,7 +139,11 @@ async def handle_unexpected_exception(
         "Unhandled exception while processing %s %s",
         request.method,
         request.url.path,
-        exc_info=(type(exception), exception, exception.__traceback__),
+        exc_info=(
+            type(exception),
+            exception,
+            exception.__traceback__,
+        ),
     )
 
     context: dict[str, Any] = create_template_context(
@@ -128,10 +157,14 @@ async def handle_unexpected_exception(
         ),
     )
 
-    # Return a generic response so internal exception details are not exposed.
-    return templates.TemplateResponse(
+    response = templates.TemplateResponse(
         request=request,
         name="errors/error.html",
         context=context,
         status_code=500,
     )
+
+    if request.url.path.startswith("/auth/"):
+        prevent_auth_caching(response)
+
+    return response
