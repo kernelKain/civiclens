@@ -8,7 +8,10 @@
     <div class="col-12 col-md-7 col-lg-5">
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <h1 class="h3 mb-2">Create your CivicLens account</h1>
+          <h1 class="h3 mb-2">
+            Create your CivicLens account
+          </h1>
+
           <p class="text-secondary mb-4">
             Join your community and follow civic issues.
           </p>
@@ -30,21 +33,28 @@
               <label class="form-label" for="display_name">
                 Display name
               </label>
+
               <input
                 class="form-control"
                 id="display_name"
                 name="display_name"
                 value="{{ display_name }}"
                 autocomplete="name"
+                minlength="2"
                 maxlength="80"
                 required
               >
+
+              <div class="form-text">
+                Use between 2 and 80 characters.
+              </div>
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="email">
                 Email
               </label>
+
               <input
                 class="form-control"
                 id="email"
@@ -52,6 +62,7 @@
                 type="email"
                 value="{{ email }}"
                 autocomplete="email"
+                maxlength="254"
                 required
               >
             </div>
@@ -60,17 +71,20 @@
               <label class="form-label" for="password">
                 Password
               </label>
+
               <input
                 class="form-control"
                 id="password"
                 name="password"
                 type="password"
                 autocomplete="new-password"
-                minlength="8"
+                minlength="10"
+                maxlength="72"
                 required
               >
+
               <div class="form-text">
-                Use at least eight characters.
+                Use between 10 and 72 characters.
               </div>
             </div>
 

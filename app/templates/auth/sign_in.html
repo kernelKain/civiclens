@@ -9,6 +9,7 @@
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
           <h1 class="h3 mb-2">Sign in to CivicLens</h1>
+
           <p class="text-secondary mb-4">
             Continue participating in your community.
           </p>
@@ -16,12 +17,6 @@
           {% if confirmed %}
           <div class="alert alert-success" role="status">
             Your email is confirmed. You can now sign in.
-          </div>
-          {% endif %}
-
-          {% if signed_out %}
-          <div class="alert alert-success" role="status">
-            You have been signed out.
           </div>
           {% endif %}
 
@@ -38,10 +33,19 @@
               value="{{ csrf_token }}"
             >
 
+            {% if next_path %}
+            <input
+              type="hidden"
+              name="next"
+              value="{{ next_path }}"
+            >
+            {% endif %}
+
             <div class="mb-3">
               <label class="form-label" for="email">
                 Email
               </label>
+
               <input
                 class="form-control"
                 id="email"
@@ -49,6 +53,7 @@
                 type="email"
                 value="{{ email }}"
                 autocomplete="email"
+                maxlength="254"
                 required
               >
             </div>
@@ -57,12 +62,15 @@
               <label class="form-label" for="password">
                 Password
               </label>
+
               <input
                 class="form-control"
                 id="password"
                 name="password"
                 type="password"
                 autocomplete="current-password"
+                minlength="10"
+                maxlength="72"
                 required
               >
             </div>
