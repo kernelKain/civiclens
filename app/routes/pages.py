@@ -1,17 +1,22 @@
-"""Page routes for the CivicLens foundation."""
+"""Public and authenticated page routes for CivicLens."""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 
+from app.auth.dependencies import CurrentUser
 from app.templating import create_template_context, templates
 
 
 router = APIRouter()
 
 
-@router.get("/", response_class=HTMLResponse, name="explore")
-async def explore(request: Request):
-    """Render the public Explore placeholder."""
+@router.get(
+    "/",
+    response_class=HTMLResponse,
+    name="explore",
+)
+async def explore(request: Request) -> HTMLResponse:
+    """Render the public Explore page."""
 
     context = create_template_context(
         request,
@@ -31,9 +36,16 @@ async def explore(request: Request):
     )
 
 
-@router.get("/report", response_class=HTMLResponse, name="report")
-async def report(request: Request):
-    """Render the future reporting-flow placeholder."""
+@router.get(
+    "/report",
+    response_class=HTMLResponse,
+    name="report",
+)
+async def report(
+    request: Request,
+    current_user: CurrentUser,
+) -> HTMLResponse:
+    """Render the protected reporting-flow placeholder."""
 
     context = create_template_context(
         request,
@@ -42,8 +54,9 @@ async def report(request: Request):
         heading="Report a civic issue",
         description=(
             "Photo upload, approximate location confirmation, AI suggestions, "
-            "and duplicate matching are not implemented in this foundation."
+            "and duplicate matching will be introduced in a later milestone."
         ),
+        current_user=current_user,
     )
 
     return templates.TemplateResponse(
@@ -53,9 +66,16 @@ async def report(request: Request):
     )
 
 
-@router.get("/following", response_class=HTMLResponse, name="following")
-async def following(request: Request):
-    """Render the future followed-issues placeholder."""
+@router.get(
+    "/following",
+    response_class=HTMLResponse,
+    name="following",
+)
+async def following(
+    request: Request,
+    current_user: CurrentUser,
+) -> HTMLResponse:
+    """Render the protected followed-issues placeholder."""
 
     context = create_template_context(
         request,
@@ -63,9 +83,10 @@ async def following(request: Request):
         active_nav="following",
         heading="Issues you follow",
         description=(
-            "Following and resident notifications will be introduced after "
-            "authentication and persistent issue records are available."
+            "Your followed civic issues and resident notifications "
+            "will be introduced in a later milestone."
         ),
+        current_user=current_user,
     )
 
     return templates.TemplateResponse(
@@ -75,9 +96,16 @@ async def following(request: Request):
     )
 
 
-@router.get("/account", response_class=HTMLResponse, name="account")
-async def account(request: Request):
-    """Render the future account placeholder."""
+@router.get(
+    "/account",
+    response_class=HTMLResponse,
+    name="account",
+)
+async def account(
+    request: Request,
+    current_user: CurrentUser,
+) -> HTMLResponse:
+    """Render the protected resident account placeholder."""
 
     context = create_template_context(
         request,
@@ -85,9 +113,10 @@ async def account(request: Request):
         active_nav="account",
         heading="Your CivicLens account",
         description=(
-            "Account creation and sign-in are not available yet. Supabase "
-            "authentication will be added in a later milestone."
+            "You are signed in. Profile management and account preferences "
+            "will be introduced in a later milestone."
         ),
+        current_user=current_user,
     )
 
     return templates.TemplateResponse(
@@ -102,8 +131,11 @@ async def account(request: Request):
     response_class=HTMLResponse,
     name="issue_detail",
 )
-async def issue_detail(request: Request, issue_id: str):
-    """Render a demonstration issue-detail placeholder."""
+async def issue_detail(
+    request: Request,
+    issue_id: str,
+) -> HTMLResponse:
+    """Render the public demonstration issue-detail page."""
 
     context = create_template_context(
         request,
