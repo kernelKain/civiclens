@@ -8,7 +8,9 @@
     <div class="col-12 col-md-7 col-lg-5">
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <h1 class="h3 mb-2">Sign in to CivicLens</h1>
+          <h1 class="h3 mb-2">
+            Sign in to CivicLens
+          </h1>
 
           <p class="text-secondary mb-4">
             Continue participating in your community.
@@ -16,12 +18,20 @@
 
           {% if confirmed %}
           <div class="alert alert-success" role="status">
+            <i
+              class="bi bi-check-circle me-2"
+              aria-hidden="true"
+            ></i>
             Your email is confirmed. You can now sign in.
           </div>
           {% endif %}
 
           {% if error %}
           <div class="alert alert-danger" role="alert">
+            <i
+              class="bi bi-exclamation-circle me-2"
+              aria-hidden="true"
+            ></i>
             {{ error }}
           </div>
           {% endif %}
@@ -82,7 +92,7 @@
 
           <p class="text-center mt-4 mb-0">
             Need an account?
-            <a href="/auth/sign-up">Create one</a>
+            <a href="/auth/sign-up">Create an account</a>
           </p>
         </div>
       </div>

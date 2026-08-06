@@ -1,18 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="page-section">
-    <div class="container">
-        <div class="placeholder-card empty-state">
-            <span class="empty-state-icon" aria-hidden="true">
-                <i class="bi bi-person"></i>
+<section class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <div class="d-flex align-items-start gap-3 mb-4">
+            <span
+              class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary flex-shrink-0"
+              style="width: 3.5rem; height: 3.5rem;"
+              aria-hidden="true"
+            >
+              <i class="bi bi-person fs-3"></i>
             </span>
-            <h1>{{ heading }}</h1>
-            <p>{{ description }}</p>
-            <span class="text-secondary">
-                Authentication is intentionally outside this foundation milestone.
-            </span>
+
+            <div>
+              <p class="text-secondary mb-1">
+                Signed-in resident
+              </p>
+
+              <h1 class="h3 mb-2">
+                {{ current_user.display_name
+                   | default("CivicLens resident", true) }}
+              </h1>
+
+              <span class="badge text-bg-primary">
+                {{ current_user.role
+                   | default("resident", true)
+                   | replace("_", " ")
+                   | title }}
+              </span>
+            </div>
+          </div>
+
+          <hr>
+
+          <dl class="row mb-4">
+            <dt class="col-sm-4 text-secondary">
+              Display name
+            </dt>
+
+            <dd class="col-sm-8">
+              {{ current_user.display_name
+                 | default("CivicLens resident", true) }}
+            </dd>
+
+            <dt class="col-sm-4 text-secondary">
+              Email
+            </dt>
+
+            <dd class="col-sm-8">
+              {% if current_user.email %}
+              <a href="mailto:{{ current_user.email }}">
+                {{ current_user.email }}
+              </a>
+              {% else %}
+              <span class="text-secondary">
+                Email unavailable
+              </span>
+              {% endif %}
+            </dd>
+
+            <dt class="col-sm-4 text-secondary">
+              Role
+            </dt>
+
+            <dd class="col-sm-8">
+              {{ current_user.role
+                 | default("resident", true)
+                 | replace("_", " ")
+                 | title }}
+            </dd>
+          </dl>
+
+          <div class="alert alert-light border" role="note">
+            <i
+              class="bi bi-shield-lock me-2"
+              aria-hidden="true"
+            ></i>
+            Your email is private and is only displayed on your
+            authenticated Account page.
+          </div>
+
+          <form method="post" action="/auth/sign-out">
+            <input
+              type="hidden"
+              name="csrf_token"
+              value="{{ csrf_token }}"
+            >
+
+            <button
+              class="btn btn-outline-danger"
+              type="submit"
+            >
+              <i
+                class="bi bi-box-arrow-right me-2"
+                aria-hidden="true"
+              ></i>
+              Sign out
+            </button>
+          </form>
         </div>
+      </div>
     </div>
+  </div>
 </section>
 {% endblock %}

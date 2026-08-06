@@ -18,9 +18,22 @@
 
           {% if error %}
           <div class="alert alert-danger" role="alert">
+            <i
+              class="bi bi-exclamation-circle me-2"
+              aria-hidden="true"
+            ></i>
             {{ error }}
           </div>
           {% endif %}
+
+          <div class="alert alert-info" role="note">
+            <i
+              class="bi bi-envelope-check me-2"
+              aria-hidden="true"
+            ></i>
+            After registering, you must confirm your email address
+            before signing in.
+          </div>
 
           <form method="post" action="/auth/sign-up">
             <input
@@ -38,6 +51,7 @@
                 class="form-control"
                 id="display_name"
                 name="display_name"
+                type="text"
                 value="{{ display_name }}"
                 autocomplete="name"
                 minlength="2"
@@ -46,7 +60,7 @@
               >
 
               <div class="form-text">
-                Use between 2 and 80 characters.
+                This is the name other CivicLens residents may see.
               </div>
             </div>
 
@@ -80,11 +94,16 @@
                 autocomplete="new-password"
                 minlength="10"
                 maxlength="72"
+                aria-describedby="password-guidance"
                 required
               >
 
-              <div class="form-text">
-                Use between 10 and 72 characters.
+              <div
+                class="form-text"
+                id="password-guidance"
+              >
+                Use between 10 and 72 characters. Choose a unique
+                password that you do not use on another service.
               </div>
             </div>
 
@@ -94,7 +113,7 @@
           </form>
 
           <p class="text-center mt-4 mb-0">
-            Already registered?
+            Already have an account?
             <a href="/auth/sign-in">Sign in</a>
           </p>
         </div>

@@ -39,4 +39,9 @@ def create_template_context(
             "csrf_token",
             "",
         ),
+        "current_user": getattr(
+            request.state,
+            "current_user",
+            None,
+        ),
     }

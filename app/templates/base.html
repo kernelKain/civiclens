@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <meta
         name="description"
         content="CivicLens helps residents discover and contribute evidence to shared civic issues."
@@ -22,17 +23,21 @@
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
         crossorigin="anonymous"
     >
+
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
         rel="stylesheet"
         integrity="sha384-CK2SzKma4jA5H/MXDUU7i1TqZlCFaD4T01vtyDFvPlD97JQyS+IsSh1nI2EFbpyk"
         crossorigin="anonymous"
     >
+
     <link href="/css/app.css" rel="stylesheet">
 </head>
 
 <body class="d-flex min-vh-100 flex-column">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content">
+        Skip to main content
+    </a>
 
     <div
         id="network-status"
@@ -58,6 +63,7 @@
                     <span class="civic-brand-mark" aria-hidden="true">
                         <i class="bi bi-bullseye"></i>
                     </span>
+
                     <span>{{ settings.app_name }}</span>
                 </a>
 
@@ -78,6 +84,7 @@
                         Following
                     </a>
 
+                    {% if current_user %}
                     <a
                         class="desktop-nav-link{% if active_nav == 'account' %} active{% endif %}"
                         href="{{ request.url_for('account') }}"
@@ -85,13 +92,24 @@
                     >
                         Account
                     </a>
+                    {% else %}
+                    <a
+                        class="desktop-nav-link"
+                        href="{{ request.url_for('auth_sign_in_page') }}"
+                    >
+                        Sign in
+                    </a>
+                    {% endif %}
 
                     <a
                         class="civic-report-button{% if active_nav == 'report' %} active{% endif %}"
                         href="{{ request.url_for('report') }}"
                         {% if active_nav == "report" %}aria-current="page"{% endif %}
                     >
-                        <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>
+                        <i
+                            class="bi bi-plus-circle me-2"
+                            aria-hidden="true"
+                        ></i>
                         Report an issue
                     </a>
                 </div>
@@ -99,7 +117,11 @@
         </nav>
     </header>
 
-    <main id="main-content" class="site-main flex-grow-1" tabindex="-1">
+    <main
+        id="main-content"
+        class="site-main flex-grow-1"
+        tabindex="-1"
+    >
         {% block content %}{% endblock %}
     </main>
 
@@ -143,6 +165,7 @@
                 <span>Following</span>
             </a>
 
+            {% if current_user %}
             <a
                 class="mobile-nav-link{% if active_nav == 'account' %} active{% endif %}"
                 href="{{ request.url_for('account') }}"
@@ -151,6 +174,18 @@
                 <i class="bi bi-person" aria-hidden="true"></i>
                 <span>Account</span>
             </a>
+            {% else %}
+            <a
+                class="mobile-nav-link"
+                href="{{ request.url_for('auth_sign_in_page') }}"
+            >
+                <i
+                    class="bi bi-box-arrow-in-right"
+                    aria-hidden="true"
+                ></i>
+                <span>Sign in</span>
+            </a>
+            {% endif %}
         </div>
     </nav>
 
@@ -159,6 +194,7 @@
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"
     ></script>
+
     <script src="/js/app.js" defer></script>
 </body>
 </html>
