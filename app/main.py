@@ -2,16 +2,28 @@
 
 import logging
 from typing import Any
+from urllib.parse import urlencode
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import (
+    HTMLResponse,
+    RedirectResponse,
+)
 from fastapi.staticfiles import StaticFiles
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.exceptions import (
+    HTTPException as StarletteHTTPException,
+)
 
 from app.auth.cookies import prevent_auth_caching
 from app.auth.csrf import CSRFCookieMiddleware
+from app.auth.dependencies import AuthenticationRequired
+from app.auth.middleware import AuthenticationMiddleware
 from app.config import get_settings
-from app.routes.auth import router as auth_router
+from app.routes.auth import (
+    router as auth_router,
+    sign_in_url,
+    validate_local_next,
+)
 from app.routes.pages import router as pages_router
 from app.templating import (
     PROJECT_ROOT,
@@ -32,7 +44,10 @@ app = FastAPI(
     debug=settings.debug,
 )
 
-# Assign a CSRF token to HTML requests and manage the secure CSRF cookie.
+# Verify Supabase access tokens and prepare request.state.current_user.
+app.add_middleware(AuthenticationMiddleware)
+
+# Assign a CSRF token to HTML requests and manage the CSRF cookie.
 app.add_middleware(CSRFCookieMiddleware)
 
 # These mounts mirror Vercel's public asset URLs during local development.
@@ -51,8 +66,7 @@ if JS_DIRECTORY.is_dir():
         name="js",
     )
 
-# Authentication routes are registered before general page routes. This
-# prevents a broad page route from accidentally matching an auth URL.
+# Authentication routes must be registered before general page routes.
 app.include_router(auth_router)
 app.include_router(pages_router)
 
@@ -68,12 +82,48 @@ async def health() -> dict[str, str]:
     }
 
 
+@app.exception_handler(AuthenticationRequired)
+async def handle_authentication_required(
+    request: Request,
+    exception: AuthenticationRequired,
+) -> RedirectResponse:
+    """Redirect protected requests to refresh or sign-in."""
+
+    next_path = (
+        validate_local_next(exception.next_path)
+        or "/"
+    )
+
+    session_expired = getattr(
+        request.state,
+        "auth_session_expired",
+        False,
+    )
+
+    refresh_token = request.cookies.get(
+        settings.refresh_cookie_name
+    )
+
+    if session_expired and refresh_token:
+        query = urlencode({"next": next_path})
+        destination = f"/auth/refresh?{query}"
+    else:
+        destination = sign_in_url(next_path)
+
+    response = RedirectResponse(
+        url=destination,
+        status_code=303,
+    )
+    prevent_auth_caching(response)
+    return response
+
+
 @app.exception_handler(StarletteHTTPException)
 async def handle_http_exception(
     request: Request,
     exception: StarletteHTTPException,
 ) -> HTMLResponse:
-    """Render safe HTML responses for expected HTTP errors."""
+    """Render safe HTML responses for ordinary HTTP errors."""
 
     error_details: dict[int, tuple[str, str]] = {
         401: (
@@ -133,7 +183,7 @@ async def handle_unexpected_exception(
     request: Request,
     exception: Exception,
 ) -> HTMLResponse:
-    """Log unexpected failures and return a safe visitor-facing response."""
+    """Log unexpected failures and return a safe visitor response."""
 
     logger.error(
         "Unhandled exception while processing %s %s",
@@ -153,7 +203,8 @@ async def handle_unexpected_exception(
         status_code=500,
         heading="CivicLens encountered a problem",
         description=(
-            "The request could not be completed. Please try again shortly."
+            "The request could not be completed. "
+            "Please try again shortly."
         ),
     )
 

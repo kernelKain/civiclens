@@ -1,48 +1,34 @@
-"""FastAPI dependencies for authenticated residents."""
+"""Dependencies for routes that require an authenticated user."""
 
 from typing import Annotated
 
-import jwt
-from fastapi import Depends, HTTPException, Request
-from fastapi.concurrency import run_in_threadpool
-
-from app.auth.tokens import verify_access_token
-from app.config import get_settings
+from fastapi import Depends, Request
 
 
-settings = get_settings()
+class AuthenticationRequired(Exception):
+    """Raised when a visitor attempts to access a protected route."""
+
+    def __init__(self, next_path: str) -> None:
+        super().__init__("Authentication is required.")
+        self.next_path = next_path
 
 
-async def get_optional_resident(
-    request: Request,
-) -> dict | None:
-    token = request.cookies.get(settings.access_cookie_name)
+def require_user(request: Request) -> dict:
+    """Return the verified user or request an authentication redirect."""
 
-    if not token:
-        return None
+    user = getattr(
+        request.state,
+        "current_user",
+        None,
+    )
 
-    try:
-        return await run_in_threadpool(
-            verify_access_token,
-            token,
-        )
-    except (jwt.PyJWTError, ValueError):
-        return None
+    if user is None:
+        raise AuthenticationRequired(request.url.path)
+
+    return user
 
 
-async def require_resident(
-    claims: Annotated[
-        dict | None,
-        Depends(get_optional_resident),
-    ],
-) -> dict:
-    if claims is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Authentication required.",
-        )
-
-    return claims
-
-
-CurrentResident = Annotated[dict, Depends(require_resident)]
+CurrentUser = Annotated[
+    dict,
+    Depends(require_user),
+]
